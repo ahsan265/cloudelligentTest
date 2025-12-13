@@ -7,6 +7,7 @@ const loginSchema = z.object({
   year: z.number().min(6, "Please enter the year of item"),
   cpu: z.string().min(6, "Please enter the cpu details"),
   hard: z.string().min(6, "Please enter the hard disk details"),
+  price: z.string().min(1, "Please enter the price of item"),
 });
 export type LoginFormValues = z.infer<typeof loginSchema>;
 
@@ -22,6 +23,7 @@ export const AddItemPage = () => {
       year: 0,
       cpu: "",
       hard: "",
+      price: "",
     },
   });
 
@@ -45,7 +47,7 @@ export const AddItemPage = () => {
             </Typography>
             <TextField
               {...field}
-              label="Email"
+              label="Name"
               fullWidth
               margin="normal"
               error={!!errors.name}
@@ -65,7 +67,7 @@ export const AddItemPage = () => {
             </Typography>
             <TextField
               {...field}
-              label="Email"
+              label="year"
               fullWidth
               margin="normal"
               error={!!errors.year}
@@ -74,7 +76,63 @@ export const AddItemPage = () => {
           </>
         )}
       />
-
+      <Controller
+        name="cpu"
+        control={control}
+        render={({ field }) => (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {`Enter the ${field.name} `}
+            </Typography>
+            <TextField
+              {...field}
+              label="year"
+              fullWidth
+              margin="normal"
+              error={!!errors.year}
+              helperText={errors.year?.message}
+            />
+          </>
+        )}
+      />
+      <Controller
+        name="hard"
+        control={control}
+        render={({ field }) => (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {`Enter the ${field.name} `}
+            </Typography>
+            <TextField
+              {...field}
+              label="year"
+              fullWidth
+              margin="normal"
+              error={!!errors.year}
+              helperText={errors.year?.message}
+            />
+          </>
+        )}
+      />
+      <Controller
+        name="price"
+        control={control}
+        render={({ field }) => (
+          <>
+            <Typography variant="h6" gutterBottom>
+              {`Enter the ${field.name} `}
+            </Typography>
+            <TextField
+              {...field}
+              label="year"
+              fullWidth
+              margin="normal"
+              error={!!errors.year}
+              helperText={errors.year?.message}
+            />
+          </>
+        )}
+      />
       <Button
         type="submit"
         variant="contained"
