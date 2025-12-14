@@ -3,8 +3,10 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ToggleButton } from "@mui/material";
+import { useTheme } from "../custome-hooks/theme-context";
 
 export const Header = () => {
+  const { theme, toggleTheme } = useTheme();
   return (
     <Box sx={{ flexGrow: 1 }}>
       <AppBar
@@ -20,7 +22,9 @@ export const Header = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             News
           </Typography>
-          <ToggleButton selected={false} value={true}></ToggleButton>
+          <ToggleButton selected={true} value={true} onClick={toggleTheme}>
+            {theme === "white" ? "Dark Mode" : "Light Mode"}
+          </ToggleButton>
         </Toolbar>
       </AppBar>
     </Box>

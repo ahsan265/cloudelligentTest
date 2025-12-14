@@ -14,7 +14,6 @@ export const PageLayout = () => {
   const devices = useLiveQuery(() => db.getAllDevices());
   const [openDialog, setOpenDialog] = React.useState(false);
   const [updateItem, setUpdateItem] = React.useState<IDeviceItem | null>(null);
-
   const handleOnAddItemDialog = () => {
     setUpdateItem(null);
     setOpenDialog(true);
@@ -68,7 +67,7 @@ export const PageLayout = () => {
   };
   return (
     <StyledWrapper>
-      <Header></Header>
+      <Header />
       <SyledContentArea>
         <Button variant="contained" onClick={handleOnAddItemDialog}>
           Add Item
