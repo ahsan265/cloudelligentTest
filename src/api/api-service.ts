@@ -5,7 +5,7 @@ import type { DeviceInformation, IDeviceItem } from "../types/device-types";
 export const getAllDevices = async () => {
   const data = await db.getAllDevices();
   if (data.length === 0) return [];
-  const query = data.map((id) => `id=${id}`).join("&");
+  const query = data.map((val) => `id=${val.id}`).join("&");
   const response = await apiService.get<DeviceInformation>(`/objects?${query}`);
   return response.data;
 };

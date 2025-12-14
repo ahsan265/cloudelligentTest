@@ -3,7 +3,7 @@ import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import { ToggleButton } from "@mui/material";
-import { useTheme } from "../custome-hooks/theme-context";
+import { useTheme } from "../context/theme-context";
 
 export const Header = () => {
   const { theme, toggleTheme } = useTheme();
