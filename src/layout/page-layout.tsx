@@ -4,7 +4,7 @@ import { AddItemPage, type formValues } from "../feature/Add-item-page";
 import { Button } from "@mui/material";
 import React from "react";
 import { AlertDialog } from "../components/modal";
-import { registerDevice, updateDevice } from "../api/api-service";
+import { deleteDevice, registerDevice, updateDevice } from "../api/api-service";
 import { db } from "../db-local/index-db-wrapper";
 import { ListCard } from "../components/device";
 import { useLiveQuery } from "dexie-react-hooks";
@@ -17,6 +17,15 @@ export const PageLayout = () => {
   const handleOnAddItemDialog = () => {
     setUpdateItem(null);
     setOpenDialog(true);
+  };
+  const handleOnItemDelete = (val: IDeviceItem) => {
+    db.deleteDevice(val.id)
+      .then(() => {
+        deleteDevice(val.id);
+      })
+      .catch((error) => {
+        console.error("Error deleting item:", error);
+      });
   };
   const handleOnItemUpdate = (val: IDeviceItem) => {
     setUpdateItem(val);
@@ -73,7 +82,11 @@ export const PageLayout = () => {
           Add Item
         </Button>
         <StyledItemsWrapper>
-          <ListCard items={devices ?? []} onUpdate={handleOnItemUpdate} />
+          <ListCard
+            items={devices ?? []}
+            onUpdate={handleOnItemUpdate}
+            onDelete={handleOnItemDelete}
+          />
         </StyledItemsWrapper>
       </SyledContentArea>
       <AlertDialog

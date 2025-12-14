@@ -23,20 +23,19 @@ type ThemeContextType = {
 const ThemeContext = createContext<ThemeContextType | null>(null);
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
-  const [theme, setTheme] = useState<Theme>("white");
+  const [theme, setTheme] = useState<Theme | null>(null);
   useEffect(() => {
     db.theme.get(1).then((themeValue) => {
-      console.log("Theme from DB:", themeValue);
-      // You can set state here if needed
       if (!themeValue) {
-        setTheme("black");
-        db.updateTheme("black");
+        setTheme("white");
+        db.updateTheme("white");
       } else {
         setTheme(themeValue.value as Theme);
       }
     });
   }, []);
   const toggleTheme = () => {
+    if (!theme) return;
     db.updateTheme(theme === "white" ? "black" : "white");
     setTheme((prev) => (prev === "white" ? "black" : "white"));
   };
@@ -95,6 +94,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       },
     },
   };
+  if (!theme) return null;
 
   const materialTheme = createTheme(muiThemeOptions[theme]);
 

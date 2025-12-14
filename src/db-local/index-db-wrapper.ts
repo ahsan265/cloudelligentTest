@@ -1,5 +1,6 @@
 import type { IDeviceItem } from "../types/device-types";
 import Dexie, { type Table } from "dexie";
+
 const themeId = 1;
 //schema
 const device = "id";
@@ -14,8 +15,12 @@ class DeviceDb extends Dexie {
       theme: theme,
     });
   }
+
   setDevice(item: IDeviceItem) {
     return this.devices.put(item);
+  }
+  setDevices(items: IDeviceItem[]) {
+    return this.devices.bulkPut(items);
   }
   deleteDevice(id: string) {
     return this.devices.delete(id);

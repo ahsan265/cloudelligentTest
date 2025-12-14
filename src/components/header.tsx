@@ -20,7 +20,7 @@ export const Header = () => {
       >
         <Toolbar>
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            News
+            Cloudelligent Assessment
           </Typography>
           <ToggleButton selected={true} value={true} onClick={toggleTheme}>
             {theme === "white" ? "Dark Mode" : "Light Mode"}
