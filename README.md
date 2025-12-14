@@ -71,3 +71,6 @@ export default defineConfig([
   },
 ])
 ```
+
+To run the App 
+uset this command ---> npm run dev
