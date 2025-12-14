@@ -58,15 +58,18 @@ export const CrudProvider = ({ children }: { children: ReactNode }) => {
   };
   const searchItem = async (query: string) => {
     try {
-      if (query) {
-        const trimmeredQuery = query.trim();
-        const result = dbItems?.filter((data) =>
-          data.name.toLowerCase().includes(trimmeredQuery.toLowerCase())
-        );
-        setItems(result ?? []);
-      } else {
-        setItems(dbItems ?? []);
+      if (!query.trim()) {
+        const allItems = await db.getAllDevices();
+        setItems(allItems);
+        return;
       }
+
+      const trimmeredQuery = query.trim().toLowerCase();
+      const allItems = await db.getAllDevices();
+      const result = allItems.filter((item) =>
+        item.name.toLowerCase().includes(trimmeredQuery)
+      );
+      setItems(result);
     } catch (error) {
       console.error("Error searching items:", error);
     }
