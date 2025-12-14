@@ -166,7 +166,7 @@ export const AddItemPage = ({ data, onSubmitted }: AddItemPageProps) => {
           disabled={isSubmitting}
           sx={{ mt: 2 }}
         >
-          Add Item
+          {data ? "Update Item" : "Add Item"}
         </Button>
       </Box>
     </LocalizationProvider>

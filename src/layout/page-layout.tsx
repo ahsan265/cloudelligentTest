@@ -2,88 +2,42 @@ import styled from "styled-components";
 import { Header } from "../components/header";
 import { AddItemPage, type formValues } from "../feature/Add-item-page";
 import { Button } from "@mui/material";
-import React, { useEffect, useMemo } from "react";
+import React, { useMemo } from "react";
 import { AlertDialog } from "../components/modal";
-import {
-  deleteDevice,
-  getAllDevices,
-  registerDevice,
-  updateDevice,
-} from "../api/api-service";
-import { db } from "../db-local/index-db-wrapper";
 import { ListCard } from "../components/device";
-import { useLiveQuery } from "dexie-react-hooks";
 import type { IDeviceItem } from "../types/device-types";
 import { SearchBar } from "../components/search";
 import debounce from "lodash.debounce";
-import Fuse from "fuse.js";
-
-const fuseOptions = {
-  isCaseSensitive: false,
-  shouldSort: true,
-  minMatchCharLength: 1,
-  keys: ["name"],
-};
+import { useCrud } from "../context/crud-context";
 
 export const PageLayout = () => {
-  const devices = useLiveQuery(() => db.getAllDevices());
+  const { addItem, updateItem, deleteItem, searchItem } = useCrud();
   const [openDialog, setOpenDialog] = React.useState(false);
-  const [updateItem, setUpdateItem] = React.useState<IDeviceItem | null>(null);
-  const [items, setItems] = React.useState<IDeviceItem[] | null>(null);
-
-  useEffect(() => {
-    if (devices) {
-      setItems(devices);
-    }
-  }, [devices]);
-  useEffect(() => {
-    getAllDevices();
-  }, []);
+  const [updateItemData, setUpdateItemData] =
+    React.useState<IDeviceItem | null>(null);
 
   const handleOnAddItemDialog = () => {
-    setUpdateItem(null);
+    setUpdateItemData(null);
     setOpenDialog(true);
   };
 
-  const handleOnItemDelete = (val: IDeviceItem) => {
-    db.deleteDevice(val.id)
-      .then(() => {
-        deleteDevice(val.id);
-      })
-      .catch((error) => {
-        console.error("Error deleting item:", error);
-      });
-  };
+  const handleOnItemDelete = React.useCallback(async (val: IDeviceItem) => {
+    try {
+      await deleteItem(val.id);
+    } catch (error) {
+      console.error("Error deleting item:", error);
+    }
+  }, []);
 
-  const handleOnItemUpdate = (val: IDeviceItem) => {
-    setUpdateItem(val);
+  const handleOnItemUpdate = React.useCallback((val: IDeviceItem) => {
+    setUpdateItemData(val);
     setOpenDialog(true);
-  };
+  }, []);
 
-  const updateItemHandler = (val: formValues) => {
-    if (!updateItem) return;
-    updateDevice(updateItem?.id, {
-      name: val.name,
-      data: { year: val.year, cpu: val.cpu, hard: val.hard, price: val.price },
-    })
-      .then((data) => {
-        db.setDevice(data);
-      })
-      .catch((error) => {
-        console.error("Error updating item:", error);
-      })
-      .finally(() => {
-        setOpenDialog(false);
-      });
-  };
-
-  const handleAddItem = async (val: formValues) => {
-    // for updating existing item
-    if (updateItem) {
-      updateItemHandler(val);
-    } else {
-      // for adding new item
-      registerDevice({
+  const updateItemHandler = async (val: formValues) => {
+    if (!updateItemData) return;
+    try {
+      await updateItem(updateItemData.id, {
         name: val.name,
         data: {
           year: val.year,
@@ -91,29 +45,38 @@ export const PageLayout = () => {
           hard: val.hard,
           price: val.price,
         },
-      })
-        .then((data) => {
-          db.setDevice(data);
-        })
-        .catch((error) => {
-          console.error("Error adding item:", error);
-        })
-        .finally(() => {
-          setOpenDialog(false);
-        });
+      });
+    } catch (error) {
+      console.error("Error updating item:", error);
+    } finally {
+      setOpenDialog(false);
     }
   };
-  const fuse = new Fuse(devices ?? [], fuseOptions);
+
+  const handleAddItem = async (val: formValues) => {
+    if (updateItemData) {
+      await updateItemHandler(val);
+    } else {
+      try {
+        await addItem({
+          name: val.name,
+          data: {
+            year: val.year,
+            cpu: val.cpu,
+            hard: val.hard,
+            price: val.price,
+          },
+        });
+      } catch (error) {
+        console.error("Error adding item:", error);
+      } finally {
+        setOpenDialog(false);
+      }
+    }
+  };
 
   const handleSearch = (searchQuery: string) => {
-    if (searchQuery) {
-      const result = fuse
-        .search(searchQuery)
-        .map((res: any) => res.item as IDeviceItem);
-      setItems(result);
-    } else if (devices) {
-      setItems(devices);
-    }
+    searchItem(searchQuery);
   };
 
   const debouncedSearch = useMemo(() => debounce(handleSearch, 500), []);
@@ -129,7 +92,6 @@ export const PageLayout = () => {
         </StypedActionWrapper>
         <StyledItemsWrapper>
           <ListCard
-            items={items ?? []}
             onUpdate={handleOnItemUpdate}
             onDelete={handleOnItemDelete}
           />
@@ -141,7 +103,7 @@ export const PageLayout = () => {
           setOpenDialog(val);
         }}
       >
-        <AddItemPage data={updateItem} onSubmitted={handleAddItem} />
+        <AddItemPage data={updateItemData} onSubmitted={handleAddItem} />
       </AlertDialog>
     </StyledWrapper>
   );
