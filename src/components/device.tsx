@@ -9,7 +9,7 @@ import type { DeviceInformation } from "../types/device-types";
 interface cardProps extends DeviceInformation {
   onClick: () => void;
 }
-export const OutlinedCard = ({ name, data, onClick }: cardProps) => {
+export const DeviceCard = ({ name, data, onClick }: cardProps) => {
   return (
     <Box sx={{ minWidth: 275 }}>
       <Card variant="outlined" onClick={onClick}>
@@ -21,16 +21,16 @@ export const OutlinedCard = ({ name, data, onClick }: cardProps) => {
             {name}
           </Typography>
           <Typography variant="h5" component="div">
-            {data.model}
+            {data.cpu}
           </Typography>
           <Typography sx={{ color: "text.secondary", mb: 1.5 }}>
             {data.price}
           </Typography>
           <Typography variant="body2">
-            {data.year}
+            {data.hard}
             <br />
           </Typography>
-          <Typography variant="body2">{data.size}</Typography>
+          <Typography variant="body2">{data.year}</Typography>
         </CardContent>
         <CardActions>
           <Button size="small" color="warning" variant="text">
@@ -45,7 +45,7 @@ export const OutlinedCard = ({ name, data, onClick }: cardProps) => {
 export const ListCard = (data: cardProps[]) => {
   data.map((device, index) => {
     return (
-      <OutlinedCard
+      <DeviceCard
         key={index}
         name={device.name}
         data={device.data}

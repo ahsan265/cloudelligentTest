@@ -1,8 +1,8 @@
 export interface DeviceData {
   year: number;
   price: number;
-  model: string;
-  size: string;
+  cpu: string;
+  hard: string;
 }
 export interface DeviceInformation {
   name: string;
@@ -14,3 +14,7 @@ export const DeviceType = {
   Smartphone: "Smartphone",
   Desktop: "Desktop",
 };
+
+export interface IDeviceItem extends DeviceInformation {
+  id: string;
+}
