@@ -1,15 +1,12 @@
 import apiService from "../services/middlewareService";
-import type { DeviceInformation } from "../types/device-types";
+import type { DeviceInformation, IDeviceItem } from "../types/device-types";
 
 export const getAllDevices = async () => {
   const response = await apiService.get<DeviceInformation>("/object");
   return response.data;
 };
 export const registerDevice = async (deviceData: DeviceInformation) => {
-  const response = await apiService.post<DeviceInformation>(
-    "/objects",
-    deviceData
-  );
+  const response = await apiService.post<IDeviceItem>("/objects", deviceData);
   return response.data;
 };
 export const updateDevice = async (

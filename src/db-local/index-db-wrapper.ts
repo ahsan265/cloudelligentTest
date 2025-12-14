@@ -8,7 +8,7 @@ class DeviceDb extends Dexie {
   public devices!: Table<IDeviceItem, string>;
 
   constructor() {
-    super("parkingLot");
+    super("DeviceDatabase");
     this.version(1).stores({
       devices: device,
     });
@@ -19,8 +19,8 @@ class DeviceDb extends Dexie {
   deleteDevice(id: string) {
     return this.devices.delete(id);
   }
-  getAllDevices() {
-    return this.devices.toArray();
+  async getAllDevices() {
+    return await this.devices.toArray();
   }
   getDeviceById(id: string) {
     return this.devices.get(id);

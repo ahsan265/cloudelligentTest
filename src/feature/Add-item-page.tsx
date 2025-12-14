@@ -16,10 +16,10 @@ const loginSchema = z.object({
 });
 export type formValues = z.infer<typeof loginSchema>;
 interface AddItemPageProps {
-  data?: DeviceInformation;
-  onItemAdded?: (val: formValues) => void;
+  data?: DeviceInformation | null;
+  onSubmitted?: (val: formValues) => void;
 }
-export const AddItemPage = ({ data, onItemAdded }: AddItemPageProps) => {
+export const AddItemPage = ({ data, onSubmitted }: AddItemPageProps) => {
   const {
     control,
     handleSubmit,
@@ -36,7 +36,7 @@ export const AddItemPage = ({ data, onItemAdded }: AddItemPageProps) => {
   });
 
   const onSubmit = (data: formValues) => {
-    onItemAdded?.(data);
+    onSubmitted?.(data);
   };
 
   return (

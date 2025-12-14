@@ -4,35 +4,78 @@ import { AddItemPage, type formValues } from "../feature/Add-item-page";
 import { Button } from "@mui/material";
 import React from "react";
 import { AlertDialog } from "../components/modal";
-import { registerDevice } from "../api/api-service";
+import { registerDevice, updateDevice } from "../api/api-service";
+import { db } from "../db-local/index-db-wrapper";
+import { ListCard } from "../components/device";
+import { useLiveQuery } from "dexie-react-hooks";
+import type { IDeviceItem } from "../types/device-types";
 
 export const PageLayout = () => {
+  const devices = useLiveQuery(() => db.getAllDevices());
   const [openDialog, setOpenDialog] = React.useState(false);
-  const handleOnAddItem = () => {
+  const [updateItem, setUpdateItem] = React.useState<IDeviceItem | null>(null);
+
+  const handleOnAddItemDialog = () => {
+    setUpdateItem(null);
     setOpenDialog(true);
   };
-
-  const handleAddItem = async (val: formValues) => {
-    console.log("Item added:", val);
-    await registerDevice({
+  const handleOnItemUpdate = (val: IDeviceItem) => {
+    setUpdateItem(val);
+    setOpenDialog(true);
+  };
+  const updateItemHandler = (val: formValues) => {
+    if (!updateItem) return;
+    updateDevice(updateItem?.id, {
       name: val.name,
       data: { year: val.year, cpu: val.cpu, hard: val.hard, price: val.price },
     })
+      .then((data) => {
+        db.setDevice(data);
+      })
       .catch((error) => {
-        console.error("Error adding item:", error);
+        console.error("Error updating item:", error);
       })
       .finally(() => {
         setOpenDialog(false);
       });
   };
+
+  const handleAddItem = async (val: formValues) => {
+    // for updating existing item
+    if (updateItem) {
+      updateItemHandler(val);
+    } else {
+      // for adding new item
+      registerDevice({
+        name: val.name,
+        data: {
+          year: val.year,
+          cpu: val.cpu,
+          hard: val.hard,
+          price: val.price,
+        },
+      })
+        .then((data) => {
+          db.setDevice(data);
+        })
+        .catch((error) => {
+          console.error("Error adding item:", error);
+        })
+        .finally(() => {
+          setOpenDialog(false);
+        });
+    }
+  };
   return (
     <StyledWrapper>
       <Header></Header>
       <SyledContentArea>
-        <Button variant="contained" onClick={handleOnAddItem}>
+        <Button variant="contained" onClick={handleOnAddItemDialog}>
           Add Item
         </Button>
-        <StyledItemsWrapper></StyledItemsWrapper>
+        <StyledItemsWrapper>
+          <ListCard items={devices ?? []} onUpdate={handleOnItemUpdate} />
+        </StyledItemsWrapper>
       </SyledContentArea>
       <AlertDialog
         isOpen={openDialog}
@@ -40,7 +83,7 @@ export const PageLayout = () => {
           setOpenDialog(val);
         }}
       >
-        <AddItemPage onItemAdded={handleAddItem} />
+        <AddItemPage data={updateItem} onSubmitted={handleAddItem} />
       </AlertDialog>
     </StyledWrapper>
   );
@@ -62,4 +105,6 @@ const SyledContentArea = styled.div`
 const StyledItemsWrapper = styled.div`
   margin-top: 16px;
   display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
 `;
